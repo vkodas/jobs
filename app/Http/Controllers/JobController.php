@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateJobRequest;
 use App\Http\Resources\JobResource;
-use App\Jobs\ProcessJob;
+use App\Jobs\CrawlJob;
 use App\Models\Job;
 
 class JobController extends Controller
@@ -29,7 +29,7 @@ class JobController extends Controller
         $job->selectors = $request->get('selectors');
         $job->save();
 
-        ProcessJob::dispatch($job->getPrimaryKey());
+        CrawlJob::dispatch($job->getPrimaryKey());
 
         return new JobResource($job);
     }
