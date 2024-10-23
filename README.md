@@ -7,12 +7,22 @@ Easiest way to launch this application is by using provided docker-compose confi
 
 Steps to perform on your machine:
 
-    1. Clone repository
-    2. Stop services binding to port 80 (Apache, Nginx) if runing
-    3. Stop Redis if running
-    4. cd to cloned folder
-    5. execute command `./vendor/bin/sail up -d` to start docker containers
-    6. execute command `./vendor/bin/sail artisan queue:work` to enable queue's processing
+1. Clone repository
+2. Stop services binding to port 80 (Apache, Nginx) if running
+3. Stop Redis if running
+4. cd to cloned folder
+5. perform composer install by using command: 
+```
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v $(pwd):/var/www/html \
+    -w /var/www/html \
+    laravelsail/php82-composer:latest \
+    composer install --ignore-platform-reqs
+```
+6. rename or copy `.env.example` file to `.env`
+5. execute command `./vendor/bin/sail up -d` to start docker containers
+6. execute command `./vendor/bin/sail artisan queue:work` to enable queue's processing
 
 ## Usage
 
