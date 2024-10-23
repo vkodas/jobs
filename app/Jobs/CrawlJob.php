@@ -28,7 +28,7 @@ class CrawlJob implements ShouldQueue
     public function handle(): void
     {
         if (!$job = Job::find($this->jobId)) {
-            throw new \Exception('Cant load job', ['id' => $this->jobId]);
+            throw new \Exception('Can\'t find job', ['id' => $this->jobId]);
         }
 
         $job->status = JobStatusEnum::PROCESSING->value;
@@ -51,6 +51,9 @@ class CrawlJob implements ShouldQueue
         $job->save();
     }
 
+    /**
+     * @throws \Exception
+     */
     private function getScrapedContent(string $url, string $selectors = ''): array
     {
         $html = '';
