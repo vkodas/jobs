@@ -6,7 +6,9 @@ use App\Enums\JobStatusEnum;
 use App\Models\Job;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\DomCrawler\Crawler;
 
 class ProcessJob implements ShouldQueue
 {
@@ -31,7 +33,8 @@ class ProcessJob implements ShouldQueue
             $content = [];
             try {
                 foreach ($job->urls as $url) {
-                    $content[] = $this->getScrapedContent($url, $job->selectors);
+                    Log::debug('Scrapping url', ['url' => $url]);
+                    $content = array_merge($content, $this->getScrapedContent($url, $job->selectors));
                 }
             } catch (\Exception $exception) {
                 Log::error('Fail to scrape url', ['url' => $url, 'exception' => $exception->getMessage()]);
@@ -46,9 +49,22 @@ class ProcessJob implements ShouldQueue
         }
     }
 
-    private function getScrapedContent(string $url, array $selectors = [])
+    private function getScrapedContent(string $url, string $selectors = ''): array
     {
-        //implement scraping here
-        throw new \Exception('Fail to get scraped url');
+        $html = '';
+        try {
+            $html = Http::timeout(5)->get($url)->body();
+        } catch(\Illuminate\Http\Client\ConnectionException|\Exception $exception) {
+            Log::error('Fail to get url', ['url' => $url, 'exception' => $exception->getMessage()]);
+        }
+        $crawler = new Crawler($html);
+
+        if (!$html) {
+            throw new \Exception('Fail to get scraped content.');
+        }
+
+        return $crawler->filter($selectors)->each(function ($node) {
+            return $node->text();
+        });
     }
 }

@@ -18,6 +18,6 @@ class Job extends AbstractInMemoryModel
     protected string $id = '';
     public string $status = JobStatusEnum::NEW->value;
     public array $urls = [];
-    public array $selectors = [];
+    public string $selectors = '';
     public array $content = [];
 }

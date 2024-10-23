@@ -26,7 +26,7 @@ class CreateJobRequest extends FormRequest
     {
         return [
             'urls' => ['required', 'array', 'min:1'],
-            'selectors' => ['required', 'array', 'min:1'],
+            'selectors' => ['required', 'string', 'min:1'],
         ];
     }
 }
